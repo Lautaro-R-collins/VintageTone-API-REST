@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+const { connectDB, disconnectDB } = require('./config/confingdb.js')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -14,7 +15,14 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to VintageTone API' })
 })
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+// Conexión a la BD
+connectDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en el puerto ${PORT}`)
+        })
+    })
+    .catch((error) => {
+        console.error('Error al iniciar el servidor:', error)
+        disconnectDB()
+    })
