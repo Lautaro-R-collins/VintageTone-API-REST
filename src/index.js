@@ -1,36 +1,28 @@
 require('dotenv').config()
-const app = require('./app.js')
+const express = require('express')
+const cors = require('cors')
 const { connectDB, disconnectDB } = require('./config/confingdb.js')
 
+const app = express()
 const PORT = process.env.PORT || 3000
 
-// Variable para el servidor
-let server
+// Middleware
+app.use(cors())
+app.use(express.json())
 
-// Conexión a la BD e inicio del servidor
+// Routes
+app.get('/', (req, res) => {
+    res.json({ message: 'Welcome to VintageTone API' })
+})
+
+// Conexión a la BD
 connectDB()
     .then(() => {
-        server = app.listen(PORT, () => {
+        app.listen(PORT, () => {
             console.log(`Servidor corriendo en el puerto ${PORT}`)
         })
     })
     .catch((error) => {
         console.error('Error al iniciar el servidor:', error)
         disconnectDB()
-        process.exit(1)
     })
-
-// Manejo de señales para cierre graceful
-const gracefulShutdown = async (signal) => {
-    console.log(`\n${signal} recibido. Cerrando servidor...`)
-    if (server) {
-        server.close(async () => {
-            console.log('Servidor cerrado')
-            await disconnectDB()
-            process.exit(0)
-        })
-    }
-}
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
-process.on('SIGINT', () => gracefulShutdown('SIGINT'))
