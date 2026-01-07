@@ -11,9 +11,13 @@ app.use(cors())
 app.use(express.json())
 
 // Routes
+const authRoutes = require('./routes/authRoutes.js')
+
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to VintageTone API' })
 })
+
+app.use('/api/auth', authRoutes)
 
 // Conexión a la BD
 connectDB()
