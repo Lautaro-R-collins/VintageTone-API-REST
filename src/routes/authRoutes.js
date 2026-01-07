@@ -1,18 +1,25 @@
 const express = require('express')
 
-const {
-    registerUser,
-    // loginUser,
-    // logoutUser,
-} = require('../controllers/authControllers.js')
-
-const { validateSchema } = require('../middlewares/validationMiddleware.js')
-const { registerSchema, loginSchema } = require('../schemas/authSchema.js')
-
 const router = express.Router()
 
-router.post('/register', validateSchema(registerSchema), registerUser)
-// router.post('/login', validateSchema(loginSchema), loginUser)
-// router.post('/logout', logoutUser)
+router.post('/register', (req, res) => {
+    console.log('Hiciste una peticion POST a /register')
+    res.json({ message: 'Hiciste una peticion POST a /register' })
+})
+
+router.post('/login', (req, res) => {
+    console.log('Hiciste una peticion POST a /login')
+    res.json({ message: 'Hiciste una peticion POST a /login' })
+})
+
+router.post('/logout', (req, res) => {
+    console.log('Hiciste una peticion POST a /logout')
+    res.json({ message: 'Hiciste una peticion POST a /logout' })
+})
+
+router.get('/profile', (req, res) => {
+    console.log('Hiciste una peticion GET a /profile')
+    res.json({ message: 'Hiciste una peticion GET a /profile' })
+})
 
 module.exports = router
