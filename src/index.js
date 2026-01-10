@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to VintageTone API' })
 })
 
+app.use(express.json())
 app.use('/api/auth', authRoutes)
 
 // Conexión a la BD
