@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import { connectDB, disconnectDB } from './config/confingdb.js'
 
 const app = express()
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3000
 // Middleware
 app.use(cors())
 app.use(express.json())
+app.use(cookieParser())
 
 // Routes
 import authRoutes from './routes/authRoutes.js'
