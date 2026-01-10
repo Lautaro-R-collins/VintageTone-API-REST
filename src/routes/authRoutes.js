@@ -1,7 +1,7 @@
 import { registerController } from '../controllers/authControllers.js'
 
 
-const express = require('express')
+import express from 'express'
 
 const router = express.Router()
 
@@ -22,4 +22,4 @@ router.get('/profile', (req, res) => {
     res.json({ message: 'Hiciste una peticion GET a /profile' })
 })
 
-module.exports = router
+export default router
