@@ -1,7 +1,7 @@
-require('dotenv').config()
-const express = require('express')
-const cors = require('cors')
-const { connectDB, disconnectDB } = require('./config/confingdb.js')
+import 'dotenv/config'
+import express from 'express'
+import cors from 'cors'
+import { connectDB, disconnectDB } from './config/confingdb.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 // Routes
-const authRoutes = require('./routes/authRoutes.js')
+import authRoutes from './routes/authRoutes.js'
 
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to VintageTone API' })
