@@ -1,11 +1,11 @@
+import { registerController } from '../controllers/authControllers.js'
+
+
 const express = require('express')
 
 const router = express.Router()
 
-router.post('/register', (req, res) => {
-    console.log('Hiciste una peticion POST a /register')
-    res.json({ message: 'Hiciste una peticion POST a /register' })
-})
+router.post('/register', registerController)
 
 router.post('/login', (req, res) => {
     console.log('Hiciste una peticion POST a /login')
