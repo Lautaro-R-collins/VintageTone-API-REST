@@ -1,4 +1,32 @@
-node_modules
+# --- Node ---
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+
+# --- Env variables ---
 .env
-.DS_Store
+.env.local
+.env.*.local
+
+# --- Logs ---
+logs
 *.log
+log.txt
+
+# --- OS / Editor ---
+.DS_Store
+Thumbs.db
+
+# --- Build / dist ---
+dist/
+build/
+
+# --- Coverage ---
+coverage/
+
+# --- Local environment ---
+.vscode/
+.idea/
+request.http

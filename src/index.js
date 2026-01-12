@@ -32,6 +32,36 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 
+// Middleware de manejo de errores global
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+
+    // Manejar errores de validación de Zod
+    if (err.name === 'ZodError') {
+        return res.status(400).json({
+            message: 'Datos de entrada inválidos',
+            errors: err.errors.map(e => ({
+                path: e.path,
+                message: e.message
+            }))
+        })
+    }
+
+    // Errores de JWT
+    if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({ message: 'Token inválido' })
+    }
+
+    if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Token expirado' })
+    }
+
+    // Error por defecto
+    res.status(err.status || 500).json({
+        message: err.message || 'Error interno del servidor'
+    })
+})
+
 // Conexión a la BD
 connectDB()
     .then(() => {
