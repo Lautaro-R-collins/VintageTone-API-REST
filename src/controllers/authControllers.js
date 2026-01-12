@@ -1,50 +1,115 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { registerSchema } from "../schemas/authSchema.js";
+import { registerSchema, loginSchema } from "../schemas/authSchema.js";
 import UserModel from "../models/UserModel.js";
+import catchAsync from "../utils/catchAsync.js";
 
-export const registerController = async (req, res) => {
-    try {
-        // clave secreta para generar el token
-        const JWT_SECRET = process.env.JWT_SECRET
-        // datos del usuario
-        const { userName, email, password } = registerSchema.parse(req.body)
-        // Comprobar si el usuario ya existe
-        const userExists = await UserModel.findOne({ email })
+// Opciones comunes para las cookies
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+    maxAge: 3600000 // 1 hora
+}
 
-        if (userExists) {
-            return res.status(400).json({ message: 'El usuario ya existe' })
-        }
-        // Comprobar si es admin
-        const isAdmin = email === process.env.USER_ADMIN;
+export const registerController = catchAsync(async (req, res) => {
+    const JWT_SECRET = process.env.JWT_SECRET
+    const { userName, email, password } = registerSchema.parse(req.body)
 
-        // hashear la contraseña
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
-
-        // crear el usuario
-        const user = await UserModel.create({
-            userName,
-            email,
-            password: hashedPassword,
-            isAdmin
-        })
-        // generar el token
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' })
-        // guardar el token en un cookie
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 3600000
-        })
-
-        // devolver el token
-        res.json({ token })
-
-
-    } catch (error) {
-        console.log("Error en registerController:", error)
-        res.status(500).json({ message: 'Error al registrar usuario' })
+    const userExists = await UserModel.findOne({ email })
+    if (userExists) {
+        return res.status(400).json({ message: 'El usuario ya existe' })
     }
+
+    const isAdmin = email === process.env.USER_ADMIN;
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    const user = await UserModel.create({
+        userName,
+        email,
+        password: hashedPassword,
+        isAdmin
+    })
+
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' })
+
+    res.cookie('token', token, cookieOptions)
+
+    res.status(201).json({
+        message: 'Usuario registrado exitosamente',
+        userData: {
+            id: user._id,
+            userName: user.userName,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            avatar: user.avatar,
+        },
+        token
+    })
+})
+
+export const loginController = catchAsync(async (req, res) => {
+    const JWT_SECRET = process.env.JWT_SECRET
+    const { email, password } = loginSchema.parse(req.body)
+
+    const user = await UserModel.findOne({ email })
+    const genericError = 'Email o contraseña incorrectos'
+
+    if (!user) {
+        return res.status(401).json({ message: genericError })
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+        return res.status(401).json({ message: genericError })
+    }
+
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' })
+
+    res.cookie('token', token, cookieOptions)
+
+    res.json({
+        message: 'Inicio de sesión exitoso',
+        userData: {
+            id: user._id,
+            userName: user.userName,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            avatar: user.avatar,
+        },
+        token
+    })
+})
+
+export const profile = catchAsync(async (req, res) => {
+    const token = req.cookies.token
+
+    if (!token) {
+        return res.status(401).json({ error: 'No autenticado' })
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+    const user = await UserModel.findById(decoded.userId)
+    if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado' })
+    }
+
+    return res.status(200).json({
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        avatar: user.avatar,
+    })
+})
+
+export const logoutUser = (req, res) => {
+    res.clearCookie('token', {
+        ...cookieOptions,
+        maxAge: 0
+    })
+    res.status(200).json({ message: 'Usuario deslogueado exitosamente' })
 }

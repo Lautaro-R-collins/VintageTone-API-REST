@@ -1,4 +1,4 @@
-import { registerController } from '../controllers/authControllers.js'
+import { registerController, profile, logoutUser, loginController } from '../controllers/authControllers.js'
 
 
 import express from 'express'
@@ -7,19 +7,10 @@ const router = express.Router()
 
 router.post('/register', registerController)
 
-router.post('/login', (req, res) => {
-    console.log('Hiciste una peticion POST a /login')
-    res.json({ message: 'Hiciste una peticion POST a /login' })
-})
+router.post('/login', loginController)
 
-router.post('/logout', (req, res) => {
-    console.log('Hiciste una peticion POST a /logout')
-    res.json({ message: 'Hiciste una peticion POST a /logout' })
-})
+router.post('/logout', logoutUser)
 
-router.get('/profile', (req, res) => {
-    console.log('Hiciste una peticion GET a /profile')
-    res.json({ message: 'Hiciste una peticion GET a /profile' })
-})
+router.get('/profile', profile)
 
 export default router
