@@ -26,6 +26,9 @@ build/
 # --- Coverage ---
 coverage/
 
+# --- Uploads ---
+src/uploads/
+
 # --- Local environment ---
 .vscode/
 .idea/
