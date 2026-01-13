@@ -113,3 +113,28 @@ export const logoutUser = (req, res) => {
     })
     res.status(200).json({ message: 'Usuario deslogueado exitosamente' })
 }
+
+export const updateAvatar = catchAsync(async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'Por favor, sube una imagen' })
+    }
+
+    // El path que guardamos es relativo para poder servirlo estáticamente
+    // reemplazamos 'src/' para que la URL sea /uploads/avatars/...
+    const avatarPath = req.file.path.replace('src/', '')
+
+    const user = await UserModel.findByIdAndUpdate(
+        req.userId,
+        { avatar: avatarPath },
+        { new: true }
+    )
+
+    if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' })
+    }
+
+    res.json({
+        message: 'Avatar actualizado correctamente',
+        avatar: user.avatar
+    })
+})
