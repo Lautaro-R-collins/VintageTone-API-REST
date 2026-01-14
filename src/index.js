@@ -5,6 +5,11 @@ import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import { connectDB, disconnectDB } from './config/confingdb.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -20,8 +25,13 @@ app.use(cors(
 ))
 app.use(express.json())
 app.use(cookieParser())
-app.use(helmet())
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}))
 app.use(morgan('dev'))
+
+// Servir archivos estáticos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Routes
 import authRoutes from './routes/authRoutes.js'
