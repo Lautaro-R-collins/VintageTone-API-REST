@@ -35,12 +35,14 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Routes
 import authRoutes from './routes/authRoutes.js'
+import productsRoutes from './routes/productsRoutes.js'
 
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to VintageTone API' })
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/products', productsRoutes)
 
 // Middleware de manejo de errores global
 app.use((err, req, res, next) => {
@@ -50,7 +52,7 @@ app.use((err, req, res, next) => {
     if (err.name === 'ZodError') {
         return res.status(400).json({
             message: 'Datos de entrada inválidos',
-            errors: err.errors.map(e => ({
+            errors: (err.issues || err.errors || []).map(e => ({
                 path: e.path,
                 message: e.message
             }))
