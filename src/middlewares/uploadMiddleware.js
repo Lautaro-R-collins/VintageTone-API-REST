@@ -2,7 +2,7 @@ import multer from 'multer'
 import path from 'path'
 import crypto from 'crypto'
 
-// Configuración de almacenamiento
+// storage for temporary files
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'src/uploads/avatars')
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     }
 })
 
-// Filtro de archivos
+// file filter
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
@@ -25,12 +25,12 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-// Inicializar multer
+// multer initialization
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 2 * 1024 * 1024 // Limite de 2MB
+        fileSize: 2 * 1024 * 1024 // 2MB limit
     }
 })
 
