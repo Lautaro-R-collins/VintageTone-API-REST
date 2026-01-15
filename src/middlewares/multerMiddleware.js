@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import crypto from 'crypto';
 
-// Generic storage for temporary files
+// storage for temporary files
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'src/uploads/temp');
@@ -26,7 +26,7 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit for images
+        fileSize: 5 * 1024 * 1024 // 5MB limit
     }
 });
 
