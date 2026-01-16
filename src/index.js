@@ -37,12 +37,14 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 import authRoutes from './routes/authRoutes.js'
 import productsRoutes from './routes/productsRoutes.js'
 
+
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to VintageTone API' })
 })
 
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productsRoutes)
+
 
 // Middleware de manejo de errores global
 app.use((err, req, res, next) => {
