@@ -36,6 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 // Routes
 import authRoutes from './routes/authRoutes.js'
 import productsRoutes from './routes/productsRoutes.js'
+import reviewRoutes from './routes/reviewRoutes.js'
 
 
 app.get('/', (req, res) => {
@@ -44,6 +45,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productsRoutes)
+app.use('/api/reviews', reviewRoutes)
 
 
 // Middleware de manejo de errores global
